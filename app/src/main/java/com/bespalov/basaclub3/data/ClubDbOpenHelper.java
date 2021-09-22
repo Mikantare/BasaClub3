@@ -14,19 +14,19 @@ public class ClubDbOpenHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE " + MemberEntry.TABLE_NAME + "(" +
-                    MemberEntry.KEY_ID + " INTEGER PRIMARY KEY, " +
-                    MemberEntry.KEY_FIRST_NAME + " TEXT, " +
-                    MemberEntry.KEY_LAST_NAME + " TEXT, " +
-                    MemberEntry.KEY_GENDER + "INTEGER NOT NULL, " +
-                    MemberEntry.KEY_SPORT + "TEXT" + ")");
+    public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        sqLiteDatabase.execSQL("CREATE TABLE " + MemberEntry.TABLE_NAME + "(" +
+                MemberEntry.KEY_ID + " INTEGER PRIMARY KEY, " +
+                MemberEntry.KEY_FIRST_NAME + " TEXT, " +
+                MemberEntry.KEY_LAST_NAME + " TEXT, " +
+                MemberEntry.KEY_GENDER + "INTEGER NOT NULL, " +
+                MemberEntry.KEY_SPORT + "TEXT" + ")");
+
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-        db.execSQL("DROPE TABLE IF EXISTS " + ClubContract.DATABASE_NAME);
-//        db.insert(db);
-
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+            sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ClubContract.DATABASE_NAME);
+            onCreate(sqLiteDatabase);
     }
 }
