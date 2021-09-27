@@ -19,8 +19,8 @@ public class ClubDbOpenHelper extends SQLiteOpenHelper {
                 MemberEntry.KEY_ID + " INTEGER PRIMARY KEY, " +
                 MemberEntry.KEY_FIRST_NAME + " TEXT, " +
                 MemberEntry.KEY_LAST_NAME + " TEXT, " +
-                MemberEntry.KEY_GENDER + "INTEGER NOT NULL, " +
-                MemberEntry.KEY_SPORT + "TEXT" + ")");
+                MemberEntry.KEY_GENDER + " INTEGER NOT NULL, " +
+                MemberEntry.KEY_SPORT + " TEXT" + ")");
 
     }
 
