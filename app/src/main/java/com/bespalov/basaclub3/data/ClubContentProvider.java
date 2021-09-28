@@ -65,6 +65,7 @@ public class ClubContentProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
+        dataValidations(contentValues);
         SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
 
         int match = uriMatcher.match(uri);
@@ -89,27 +90,27 @@ public class ClubContentProvider extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
 
 
+        SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
 
-            SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+        int match = uriMatcher.match(uri);
 
-            int match = uriMatcher.match(uri);
+        switch (match) {
+            case MEMBERS:
+                return db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs);
 
-            switch (match) {
-                case MEMBERS:
-                    return db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs);
+            case MEMBERS_ID:
+                selection = MemberEntry.KEY_ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                return db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs);
+            default:
+                throw new IllegalArgumentException("Can't delete this uri: " + uri);
 
-                case MEMBERS_ID:
-                    selection = MemberEntry.KEY_ID + "=?";
-                    selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                    return db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs);
-                default:
-                    throw new IllegalArgumentException("Can't delete this uri: " + uri);
-
-            }
+        }
     }
 
     @Override
     public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
+        dataValidations(contentValues);
         SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
 
         int match = uriMatcher.match(uri);
@@ -131,7 +132,40 @@ public class ClubContentProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
-        return null;
+
+        int match = uriMatcher.match(uri);
+
+        switch (match) {
+            case MEMBERS:
+                return MemberEntry.CONTENT_MULTIPLE_ITEMS;
+            case MEMBERS_ID:
+                return MemberEntry.CONTENT_SINGLE_ITEMS;
+            default:
+                throw new IllegalArgumentException("Unknow Uri: " + uri);
+
+        }
+    }
+private void dataValidations (ContentValues contentValues) {
+    if (contentValues.containsKey(MemberEntry.KEY_FIRST_NAME)) {
+        String firstName = contentValues.getAsString(MemberEntry.KEY_FIRST_NAME);
+        if (firstName.equals("")) {
+            throw new IllegalArgumentException("you have to input first name");
+        }
+    }
+    if (contentValues.containsKey(MemberEntry.KEY_LAST_NAME)) {
+        String lastName = contentValues.getAsString(MemberEntry.KEY_LAST_NAME);
+        if (lastName.equals("")) {
+            throw new IllegalArgumentException("you have to input last name");
+        }
+    }
+    if (contentValues.containsKey(MemberEntry.KEY_SPORT)) {
+        String sport = contentValues.getAsString(MemberEntry.KEY_SPORT);
+        if (sport.equals("")) {
+            throw new IllegalArgumentException("you have to input sport name");
+        }
     }
 
+
+
+}
 }

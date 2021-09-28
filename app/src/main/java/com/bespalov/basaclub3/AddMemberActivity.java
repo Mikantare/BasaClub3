@@ -36,6 +36,7 @@ public class AddMemberActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_member);
         init();
+
         spinerGender.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -43,7 +44,7 @@ public class AddMemberActivity extends AppCompatActivity {
                 if (!TextUtils.isEmpty(selectedGender)) {
                     if (selectedGender.equals("Male")) {
                         gender = MemberEntry.GENDER_MALE;
-                    } if (selectedGender.equals("Famele")) {
+                    } else if (selectedGender.equals("Female")) {
                         gender = MemberEntry.GENDER_FEMALE;
                     } else {
                         gender = MemberEntry.GENDER_UNKNOW;
@@ -90,7 +91,6 @@ public class AddMemberActivity extends AppCompatActivity {
     }
 
     private void insertMember () {
-
         String firstName = editFirstName.getText().toString().trim();
         String lastName = editLastName.getText().toString().trim();
         String sport = editSport.getText().toString().trim();

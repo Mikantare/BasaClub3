@@ -1,5 +1,6 @@
 package com.bespalov.basaclub3.data;
 
+import android.content.ContentResolver;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -37,6 +38,11 @@ public final class ClubContract {
 
         public static final Uri CONTENT_URI =
                 Uri.withAppendedPath(BASE_CONTENT_URI, PATH_MEMBERS);
+
+        public static final String CONTENT_MULTIPLE_ITEMS = ContentResolver.CURSOR_DIR_BASE_TYPE +
+                "/" + AUTHORITY + "/" + PATH_MEMBERS;
+        public static final String CONTENT_SINGLE_ITEMS = ContentResolver.CURSOR_ITEM_BASE_TYPE +
+                "/" + AUTHORITY + "/" + PATH_MEMBERS;
 
     }
 
