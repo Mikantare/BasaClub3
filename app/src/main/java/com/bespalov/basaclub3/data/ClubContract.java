@@ -6,7 +6,7 @@ import android.provider.BaseColumns;
 public final class ClubContract {
 
     public static final int DATABASE_VERSION = 1;
-    public static final String DATABASE_NAME = "memberDB";
+    public static final String DATABASE_NAME = "memberDB3";
 
     public static final String SCHEME = "content://";
     public static final String AUTHORITY = "com.bespalov.basaclub3";

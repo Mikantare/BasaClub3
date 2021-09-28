@@ -4,6 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -13,14 +16,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.bespalov.basaclub3.data.ClubContract;
 import com.bespalov.basaclub3.data.ClubContract.MemberEntry;
 
 public class AddMemberActivity extends AppCompatActivity {
 
     private EditText editLastName;
     private EditText editFirstName;
-    private EditText editGroup;
+    private EditText editSport;
     private Spinner spinerGender;
     private int gender = 0;
 
@@ -56,7 +61,7 @@ public class AddMemberActivity extends AppCompatActivity {
     public void init () {
         editLastName = findViewById(R.id.editLastName);
         editFirstName = findViewById(R.id.editFirstName);
-        editGroup = findViewById(R.id.editGroup);
+        editSport = findViewById(R.id.editSport);
         spinerGender = findViewById(R.id.spinerGender);
         spinerAdapter = ArrayAdapter.createFromResource(this,R.array.array_gender, android.R.layout.simple_spinner_item);
         spinerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -73,6 +78,7 @@ public class AddMemberActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save_member:
+                insertMember();
                 return true;
             case R.id.delete_member:
                 return true;
@@ -81,5 +87,26 @@ public class AddMemberActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void insertMember () {
+
+        String firstName = editFirstName.getText().toString().trim();
+        String lastName = editLastName.getText().toString().trim();
+        String sport = editSport.getText().toString().trim();
+        ContentValues values = new ContentValues();
+        values.put(MemberEntry.KEY_FIRST_NAME, firstName);
+        values.put(MemberEntry.KEY_LAST_NAME, lastName);
+        values.put(MemberEntry.KEY_SPORT, sport);
+        values.put(MemberEntry.KEY_GENDER, gender);
+
+        ContentResolver contentResolver = getContentResolver();
+        Uri uri = contentResolver.insert(MemberEntry.CONTENT_URI,values);
+
+        if (uri == null) {
+            Toast.makeText(this,"Can't query incorrectURI " + uri, Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this,"data saved" , Toast.LENGTH_LONG).show();
+        }
     }
 }

@@ -7,6 +7,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.bespalov.basaclub3.data.ClubContract.*;
@@ -38,17 +39,17 @@ public class ClubContentProvider extends ContentProvider {
 
         SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
 
-        Cursor cursor ;
+        Cursor cursor;
 
         int match = uriMatcher.match(uri);
         switch (match) {
             case MEMBERS:
-                   cursor = db.query(MemberEntry.TABLE_NAME,
-                           projection, selection, selectionArgs, null, null, sortOrder);
+                cursor = db.query(MemberEntry.TABLE_NAME,
+                        projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case MEMBERS_ID:
                 selection = MemberEntry.KEY_ID + "=?";
-                selectionArgs = new String[] {String.valueOf(ContentUris.parseId(uri))};
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 cursor = db.query(MemberEntry.TABLE_NAME,
                         projection, selection, selectionArgs, null, null, sortOrder);
                 break;
@@ -58,22 +59,74 @@ public class ClubContentProvider extends ContentProvider {
                 throw new IllegalArgumentException("Can't query incorrectURI " + uri);
 
         }
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
 
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
-        return null;
+        SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+
+        int match = uriMatcher.match(uri);
+
+        switch (match) {
+            case MEMBERS:
+                long id = db.insert(MemberEntry.TABLE_NAME, null, contentValues);
+
+                if (id == -1) {
+                    Log.e("Insert metod", "insertion of data in the table failed for " + uri);
+                    return null;
+                }
+                return ContentUris.withAppendedId(uri, id);
+
+            default:
+                throw new IllegalArgumentException("Can't udate this uri: " + uri);
+
+        }
     }
 
     @Override
-    public int delete(Uri uri, String s, String[] strings) {
-        return 0;
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+
+
+
+            SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+
+            int match = uriMatcher.match(uri);
+
+            switch (match) {
+                case MEMBERS:
+                    return db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs);
+
+                case MEMBERS_ID:
+                    selection = MemberEntry.KEY_ID + "=?";
+                    selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                    return db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs);
+                default:
+                    throw new IllegalArgumentException("Can't delete this uri: " + uri);
+
+            }
     }
 
     @Override
-    public int update(Uri uri, ContentValues contentValues, String s, String[] strings) {
-        return 0;
+    public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
+        SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+
+        int match = uriMatcher.match(uri);
+
+        switch (match) {
+            case MEMBERS:
+                return db.update(MemberEntry.TABLE_NAME, contentValues, selection, selectionArgs);
+
+            case MEMBERS_ID:
+                selection = MemberEntry.KEY_ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                return db.update(MemberEntry.TABLE_NAME, contentValues, selection, selectionArgs);
+            default:
+                throw new IllegalArgumentException("Can't query incorrectURI " + uri);
+
+        }
+
     }
 
     @Override
