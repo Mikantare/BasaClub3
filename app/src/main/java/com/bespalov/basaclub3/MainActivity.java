@@ -7,10 +7,13 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -19,10 +22,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-      private ListView listViewMembers;
+    private ListView listViewMembers;
 
-      private static final int MEMBER_LOADER = 123;
-      MemberCursorAdapter memberCursorAdapter;
+    private static final int MEMBER_LOADER = 123;
+    MemberCursorAdapter memberCursorAdapter;
 
     private FloatingActionButton floatingActionButton;
 
@@ -39,10 +42,21 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 startActivity(intent);
             }
         });
-        memberCursorAdapter = new MemberCursorAdapter(this,null,false);
+        memberCursorAdapter = new MemberCursorAdapter(this, null, false);
         listViewMembers.setAdapter(memberCursorAdapter);
 
+        listViewMembers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(MainActivity.this, AddMemberActivity.class);
+                Uri currentMemberUri = ContentUris.withAppendedId(MemberEntry.CONTENT_URI, l);
+                intent.setData(currentMemberUri);
+                startActivity(intent);
+            }
+        });
+
         getSupportLoaderManager().initLoader(MEMBER_LOADER, null, this);
+
     }
 
 
@@ -61,11 +75,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
-    memberCursorAdapter.swapCursor(data);
+        memberCursorAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-    memberCursorAdapter.swapCursor(null);
+        memberCursorAdapter.swapCursor(null);
     }
+
+
 }

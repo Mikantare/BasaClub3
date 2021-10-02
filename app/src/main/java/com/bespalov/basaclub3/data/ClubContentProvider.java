@@ -78,6 +78,9 @@ public class ClubContentProvider extends ContentProvider {
                     Log.e("Insert metod", "insertion of data in the table failed for " + uri);
                     return null;
                 }
+
+                getContext().getContentResolver().notifyChange(uri, null);
+
                 return ContentUris.withAppendedId(uri, id);
 
             default:
@@ -91,21 +94,27 @@ public class ClubContentProvider extends ContentProvider {
 
 
         SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+        int rowsDeleted;
 
         int match = uriMatcher.match(uri);
 
         switch (match) {
             case MEMBERS:
-                return db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs);
-
+                rowsDeleted = db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs);
+                break;
             case MEMBERS_ID:
                 selection = MemberEntry.KEY_ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                return db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted = db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs);
+                break;
             default:
                 throw new IllegalArgumentException("Can't delete this uri: " + uri);
 
         }
+        if (rowsDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsDeleted;
     }
 
     @Override
@@ -114,19 +123,26 @@ public class ClubContentProvider extends ContentProvider {
         SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
 
         int match = uriMatcher.match(uri);
+        int rowsUptadet;
 
         switch (match) {
             case MEMBERS:
-                return db.update(MemberEntry.TABLE_NAME, contentValues, selection, selectionArgs);
+                rowsUptadet = db.update(MemberEntry.TABLE_NAME, contentValues, selection, selectionArgs);
+
+                break;
 
             case MEMBERS_ID:
                 selection = MemberEntry.KEY_ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                return db.update(MemberEntry.TABLE_NAME, contentValues, selection, selectionArgs);
+                rowsUptadet = db.update(MemberEntry.TABLE_NAME, contentValues, selection, selectionArgs);
+                break;
             default:
                 throw new IllegalArgumentException("Can't query incorrectURI " + uri);
-
         }
+        if (rowsUptadet != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsUptadet;
 
     }
 
@@ -145,27 +161,27 @@ public class ClubContentProvider extends ContentProvider {
 
         }
     }
-private void dataValidations (ContentValues contentValues) {
-    if (contentValues.containsKey(MemberEntry.KEY_FIRST_NAME)) {
-        String firstName = contentValues.getAsString(MemberEntry.KEY_FIRST_NAME);
-        if (firstName.equals("")) {
-            throw new IllegalArgumentException("you have to input first name");
+
+    private void dataValidations(ContentValues contentValues) {
+        if (contentValues.containsKey(MemberEntry.KEY_FIRST_NAME)) {
+            String firstName = contentValues.getAsString(MemberEntry.KEY_FIRST_NAME);
+            if (firstName.equals("")) {
+                throw new IllegalArgumentException("you have to input first name");
+            }
         }
-    }
-    if (contentValues.containsKey(MemberEntry.KEY_LAST_NAME)) {
-        String lastName = contentValues.getAsString(MemberEntry.KEY_LAST_NAME);
-        if (lastName.equals("")) {
-            throw new IllegalArgumentException("you have to input last name");
+        if (contentValues.containsKey(MemberEntry.KEY_LAST_NAME)) {
+            String lastName = contentValues.getAsString(MemberEntry.KEY_LAST_NAME);
+            if (lastName.equals("")) {
+                throw new IllegalArgumentException("you have to input last name");
+            }
         }
-    }
-    if (contentValues.containsKey(MemberEntry.KEY_SPORT)) {
-        String sport = contentValues.getAsString(MemberEntry.KEY_SPORT);
-        if (sport.equals("")) {
-            throw new IllegalArgumentException("you have to input sport name");
+        if (contentValues.containsKey(MemberEntry.KEY_SPORT)) {
+            String sport = contentValues.getAsString(MemberEntry.KEY_SPORT);
+            if (sport.equals("")) {
+                throw new IllegalArgumentException("you have to input sport name");
+            }
         }
-    }
 
 
-
-}
+    }
 }
