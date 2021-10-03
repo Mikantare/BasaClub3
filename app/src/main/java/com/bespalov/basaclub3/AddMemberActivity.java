@@ -15,6 +15,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,10 +50,19 @@ public class AddMemberActivity extends AppCompatActivity implements LoaderManage
             setTitle("Add a member");
         } else {
             setTitle("Edit the Member");
+            getSupportLoaderManager().initLoader(EDIT_MEMBER_LOADER, null, this);
         }
 
-        getSupportLoaderManager().initLoader(EDIT_MEMBER_LOADER, null, this);
-        init();
+
+        editLastName = findViewById(R.id.editLastName);
+        editFirstName = findViewById(R.id.editFirstName);
+        editSport = findViewById(R.id.editSport);
+        spinerGender = findViewById(R.id.spinerGender);
+
+        spinerAdapter = ArrayAdapter.createFromResource(this, R.array.array_gender, android.R.layout.simple_spinner_item);
+        spinerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinerGender.setAdapter(spinerAdapter);
+
 
         spinerGender.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -74,17 +84,10 @@ public class AddMemberActivity extends AppCompatActivity implements LoaderManage
                 gender = 0;
             }
         });
+
     }
 
-    public void init() {
-        editLastName = findViewById(R.id.editLastName);
-        editFirstName = findViewById(R.id.editFirstName);
-        editSport = findViewById(R.id.editSport);
-        spinerGender = findViewById(R.id.spinerGender);
-        spinerAdapter = ArrayAdapter.createFromResource(this, R.array.array_gender, android.R.layout.simple_spinner_item);
-        spinerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinerGender.setAdapter(spinerAdapter);
-    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -150,19 +153,25 @@ public class AddMemberActivity extends AppCompatActivity implements LoaderManage
             String firstName = cursor.getString(firstNameIndex);
             String lastNAme = cursor.getString(lastNameIndex);
             String sport = cursor.getString(sportIndex);
+            int genderToEdit = cursor.getInt(genderIndex);
+            Log.i("MySpiner","" + genderToEdit);
 
-            switch (gender) {
-                case (MemberEntry.GENDER_MALE):
-                    spinerGender.setSelection(MemberEntry.GENDER_MALE);
-
-                    break;
-                case (MemberEntry.GENDER_FEMALE):
-                    spinerGender.setSelection(MemberEntry.GENDER_FEMALE);
-                    break;
-                case (MemberEntry.GENDER_UNKNOW):
-                    spinerGender.setSelection(MemberEntry.GENDER_UNKNOW);
-                    break;
-            }
+//            switch (genderToEdit) {
+//                case (MemberEntry.GENDER_MALE):
+//                    spinerGender.setSelection(1);
+//
+//                    break;
+//                case (MemberEntry.GENDER_FEMALE):
+//                    spinerGender.setSelection(2);
+//                    break;
+//                case (MemberEntry.GENDER_UNKNOW):
+//                    spinerGender.setSelection(0);
+//                    break;
+//            }
+            spinerGender.setSelection(genderToEdit);
+            editFirstName.setText(firstName);
+            editLastName.setText(lastNAme);
+            editSport.setText(sport);
         }
 
 
